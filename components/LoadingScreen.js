@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import LoreForgeLogo from './LoreForgeLogo';
+import CreateInkLogo from './CreateInkLogo';
 import { colors, fonts, spacing } from '../constants/theme';
 
 export default function LoadingScreen({ fontsReady = false, progress = 0 }) {
@@ -27,20 +27,20 @@ export default function LoadingScreen({ fontsReady = false, progress = 0 }) {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.content, { opacity: fade }]}>
-        <LoreForgeLogo size={72} style={styles.logoMark} />
+        <CreateInkLogo size={72} style={styles.logoMark} />
         <Text
           style={[styles.title, fontsReady && styles.titleFont]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
-          LoreForge
+          CreateInk
         </Text>
         <Text
           style={[styles.tagline, fontsReady && styles.taglineFont]}
           numberOfLines={2}
           adjustsFontSizeToFit
         >
-          FORGE WORLDS, INSPIRE STORIES
+          CREATE WORLDS, INSPIRE STORIES
         </Text>
         <Text
           style={[styles.subtitle, fontsReady && styles.subtitleFont]}

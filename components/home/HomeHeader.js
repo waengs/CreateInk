@@ -1,15 +1,18 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useRouter } from 'expo-router';
-import LoreForgeLogo from '../LoreForgeLogo';
+import CreateInkLogo from '../CreateInkLogo';
 import { colors, fonts, spacing } from '../../constants/theme';
+import { useSettingsStore } from '../../store/useSettingsStore';
 
 export default function HomeHeader({
   greeting,
   showSettings = true,
+  showSetupHelp = true,
   showBack = false,
 }) {
   const router = useRouter();
+  const setSetupGuideVisible = useSettingsStore((s) => s.setSetupGuideVisible);
 
   return (
     <View style={styles.wrap}>
@@ -23,21 +26,34 @@ export default function HomeHeader({
             style={styles.sideBtn}
           />
         ) : null}
-        <LoreForgeLogo size={48} />
+        <CreateInkLogo size={48} />
         <View style={styles.brandBlock}>
-          <Text style={styles.brand}>LoreForge</Text>
-          <Text style={styles.tagline}>FORGE WORLDS, INSPIRE STORIES</Text>
+          <Text style={styles.brand}>CreateInk</Text>
+          <Text style={styles.tagline}>CREATE WORLDS, INSPIRE STORIES</Text>
         </View>
         {showBack ? (
           <View style={styles.sideBtn} />
         ) : showSettings ? (
-          <IconButton
-            icon="cog-outline"
-            iconColor={colors.textSecondary}
-            size={24}
-            onPress={() => router.push('/settings')}
-            style={styles.settings}
-          />
+          <View style={styles.headerActions}>
+            {showSetupHelp ? (
+              <IconButton
+                icon="information-outline"
+                iconColor={colors.textSecondary}
+                size={24}
+                onPress={() => setSetupGuideVisible(true)}
+                style={styles.headerIcon}
+                accessibilityLabel="Ollama setup guide"
+              />
+            ) : null}
+            <IconButton
+              icon="cog-outline"
+              iconColor={colors.textSecondary}
+              size={24}
+              onPress={() => router.push('/settings')}
+              style={styles.headerIcon}
+              accessibilityLabel="Settings"
+            />
+          </View>
         ) : (
           <View style={styles.sideBtn} />
         )}
@@ -75,7 +91,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     marginTop: 2,
   },
-  settings: {
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerIcon: {
     margin: 0,
   },
   sideBtn: {

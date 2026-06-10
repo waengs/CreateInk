@@ -1,6 +1,10 @@
-import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 import { getOllamaBaseUrl, useSettingsStore } from '../store/useSettingsStore';
+import {
+  getDefaultHostHint,
+  getSuggestedOllamaHost,
+} from '../utils/ollamaHost';
+
+export { getDefaultHostHint, getSuggestedOllamaHost as getSuggestedDevHost };
 
 export function getOllamaGenerateUrl() {
   return `${getOllamaBaseUrl()}/api/generate`;
@@ -12,31 +16,6 @@ export function getOllamaTagsUrl() {
 
 export function getModel() {
   return useSettingsStore.getState().ollamaModel || 'llama3';
-}
-
-/** IP of the dev machine when using Expo Go on a physical device */
-export function getSuggestedDevHost() {
-  const debuggerHost =
-    Constants.expoGoConfig?.debuggerHost ??
-    Constants.expoConfig?.hostUri?.replace(/^exp:\/\//, '');
-  if (debuggerHost) {
-    const ip = debuggerHost.split(':')[0];
-    if (ip && ip !== 'localhost' && ip !== '127.0.0.1') return ip;
-  }
-  return null;
-}
-
-export function getDefaultHostHint() {
-  if (Platform.OS === 'android') {
-    return '10.0.2.2 (Android emulator) or your PC LAN IP';
-  }
-  if (Platform.OS === 'ios') {
-    const suggested = getSuggestedDevHost();
-    return suggested
-      ? `${suggested} (physical device) or localhost (simulator)`
-      : 'localhost (simulator) or your PC LAN IP';
-  }
-  return 'localhost';
 }
 
 export function buildPrompt(

@@ -1,4 +1,4 @@
-/** LoreForge literary dark theme */
+/** CreateInk literary dark theme */
 export const colors = {
   background: '#121B22',
   surface: '#1A2830',

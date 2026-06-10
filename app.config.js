@@ -7,7 +7,7 @@ export default ({ config }) => ({
       'expo-splash-screen',
       {
         backgroundColor: '#121B22',
-        image: './assets/LoreForge_logo.png',
+        image: './assets/CreateInk_logo.png',
         resizeMode: 'contain',
         imageWidth: 160,
       },
@@ -24,20 +24,20 @@ export default ({ config }) => ({
       'expo-image-picker',
       {
         photosPermission:
-          'LoreForge needs photo access to set character portraits.',
+          'CreateInk needs photo access to set character portraits.',
       },
     ],
     'expo-sharing',
   ],
   android: {
     ...config.android,
-    package: 'com.waengs.loreforge',
-    versionCode: 6,
+    package: 'com.waengs.createink',
+    versionCode: 10,
   },
   ios: {
     ...config.ios,
-    bundleIdentifier: 'com.waengs.loreforge',
-    buildNumber: '2',
+    bundleIdentifier: 'com.waengs.createink',
+    buildNumber: '4',
     infoPlist: {
       NSAppTransportSecurity: {
         NSAllowsLocalNetworking: true,

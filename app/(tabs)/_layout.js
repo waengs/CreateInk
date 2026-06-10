@@ -1,13 +1,64 @@
-import { Tabs, usePathname } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Tabs, usePathname, useRouter } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import GenerateFab from '../../components/GenerateFab';
+import OllamaSetupModal from '../../components/onboarding/OllamaSetupModal';
 import { colors, fonts } from '../../constants/theme';
+import { useSettingsStore } from '../../store/useSettingsStore';
+import { isEmulatorOnlyHost } from '../../utils/ollamaHost';
 
 export default function TabLayout() {
   const pathname = usePathname();
+  const router = useRouter();
+  const hasSeenOnboarding = useSettingsStore((s) => s.hasSeenOllamaOnboarding);
+  const ollamaHost = useSettingsStore((s) => s.ollamaHost);
+  const setHasSeenOnboarding = useSettingsStore((s) => s.setHasSeenOllamaOnboarding);
+  const setupGuideVisible = useSettingsStore((s) => s.setupGuideVisible);
+  const setSetupGuideVisible = useSettingsStore((s) => s.setSetupGuideVisible);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [settingsHydrated, setSettingsHydrated] = useState(
+    () => useSettingsStore.persist.hasHydrated()
+  );
+
   const showFab =
     !pathname?.includes('settings') && !pathname?.includes('generate');
+
+  useEffect(() => {
+    if (useSettingsStore.persist.hasHydrated()) {
+      setSettingsHydrated(true);
+      return;
+    }
+    return useSettingsStore.persist.onFinishHydration(() => setSettingsHydrated(true));
+  }, []);
+
+  useEffect(() => {
+    if (!settingsHydrated || hasSeenOnboarding) return;
+
+    const host = ollamaHost?.trim();
+    if (host && !isEmulatorOnlyHost(host)) {
+      setHasSeenOnboarding(true);
+      return;
+    }
+
+    setShowOnboarding(true);
+  }, [
+    settingsHydrated,
+    hasSeenOnboarding,
+    ollamaHost,
+    setHasSeenOnboarding,
+  ]);
+
+  const closeGuide = (markSeen = false) => {
+    setShowOnboarding(false);
+    setSetupGuideVisible(false);
+    if (markSeen) setHasSeenOnboarding(true);
+  };
+
+  const openSettingsFromOnboarding = () => {
+    closeGuide(true);
+    router.push('/settings');
+  };
 
   return (
     <View style={styles.root}>
@@ -73,6 +124,12 @@ export default function TabLayout() {
         </Tabs>
       </View>
       {showFab ? <GenerateFab /> : null}
+
+      <OllamaSetupModal
+        visible={showOnboarding || setupGuideVisible}
+        onOpenSettings={openSettingsFromOnboarding}
+        onDismiss={() => closeGuide(!hasSeenOnboarding)}
+      />
     </View>
   );
 }

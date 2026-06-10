@@ -1,8 +1,8 @@
 import { Image, StyleSheet } from 'react-native';
 
-const LOGO = require('../assets/LoreForge_logo.png');
+const LOGO = require('../assets/CreateInk_logo.png');
 
-export default function LoreForgeLogo({ size = 48, style, imageStyle }) {
+export default function CreateInkLogo({ size = 48, style, imageStyle }) {
   return (
     <Image
       source={LOGO}

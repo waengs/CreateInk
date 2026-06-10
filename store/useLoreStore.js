@@ -396,7 +396,7 @@ export const useLoreStore = create(
       },
     }),
     {
-      name: 'loreforge-storage',
+      name: 'createink-storage',
       storage: createJSONStorage(() => AsyncStorage),
       migrate: (persisted) => migrateState(persisted),
       version: 1,

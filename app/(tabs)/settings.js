@@ -15,12 +15,20 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Menu, Switch, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeHeader from '../../components/home/HomeHeader';
-import LoreForgeLogo from '../../components/LoreForgeLogo';
+import CreateInkLogo from '../../components/CreateInkLogo';
+import ConnectionTestModal from '../../components/settings/ConnectionTestModal';
+import FindPcIpModal from '../../components/settings/FindPcIpModal';
 import {
   getDefaultHostHint,
-  getSuggestedDevHost,
   testOllamaConnection,
 } from '../../services/ollama';
+import {
+  getSuggestedOllamaHost,
+  isAndroidEmulator,
+  isEmulatorOnlyHost,
+  isPhysicalPhone,
+  shouldShowLocalhostChip,
+} from '../../utils/ollamaHost';
 import { getOllamaBaseUrl } from '../../store/useSettingsStore';
 import { colors, fonts, radius, spacing } from '../../constants/theme';
 import { useLoreStore } from '../../store/useLoreStore';
@@ -75,8 +83,10 @@ export default function SettingsScreen() {
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const [importJson, setImportJson] = useState('');
   const [showImport, setShowImport] = useState(false);
+  const [testModal, setTestModal] = useState(null);
+  const [showIpHelp, setShowIpHelp] = useState(false);
 
-  const suggestedIp = getSuggestedDevHost();
+  const suggestedIp = getSuggestedOllamaHost();
   const fullUrl = getOllamaBaseUrl();
 
   const runTest = useCallback(async () => {
@@ -96,11 +106,11 @@ export default function SettingsScreen() {
   }, [runTest]);
 
   const applySuggestedHost = () => {
-    if (Platform.OS === 'android' && !suggestedIp) {
-      setOllamaHost('10.0.2.2');
-    } else if (suggestedIp) {
+    if (suggestedIp) {
       setOllamaHost(suggestedIp);
-    } else {
+    } else if (isAndroidEmulator()) {
+      setOllamaHost('10.0.2.2');
+    } else if (shouldShowLocalhostChip()) {
       setOllamaHost('localhost');
     }
     setTimeout(runTest, 300);
@@ -108,7 +118,7 @@ export default function SettingsScreen() {
 
   const handleExport = async () => {
     try {
-      await Share.share({ message: exportWorld(), title: 'LoreForge World' });
+      await Share.share({ message: exportWorld(), title: 'CreateInk World' });
     } catch (e) {
       Alert.alert('Export failed', e.message);
     }
@@ -127,14 +137,11 @@ export default function SettingsScreen() {
 
   const handleTestConnection = async () => {
     const r = await runTest();
-    if (r.ok) {
-      Alert.alert('Connected', r.message);
-    } else {
-      Alert.alert(
-        'Cannot connect',
-        `${r.message}\n\n${fullUrl}\n\nOn your PC:\n1. Install & open Ollama\n2. Run: ollama pull ${ollamaModel}\n3. For a phone: set host to your PC's Wi‑Fi IP\n4. Allow port 11434 in Windows Firewall`
-      );
-    }
+    setTestModal({
+      success: r.ok,
+      message: r.message,
+      endpoint: r.url || fullUrl,
+    });
   };
 
   return (
@@ -167,12 +174,26 @@ export default function SettingsScreen() {
             selectionColor={colors.primary}
           />
 
+          <TouchableOpacity
+            style={styles.ipHelpLink}
+            onPress={() => setShowIpHelp(true)}
+            activeOpacity={0.85}
+          >
+            <MaterialCommunityIcons
+              name="help-circle-outline"
+              size={18}
+              color={colors.goldMuted}
+            />
+            <Text style={styles.ipHelpText}>How to find your PC IP address</Text>
+          </TouchableOpacity>
+
           <View style={styles.chipRow}>
             {suggestedIp ? (
               <TouchableOpacity style={styles.chip} onPress={applySuggestedHost}>
                 <Text style={styles.chipText}>Use {suggestedIp}</Text>
               </TouchableOpacity>
-            ) : Platform.OS === 'android' ? (
+            ) : null}
+            {isAndroidEmulator() ? (
               <TouchableOpacity
                 style={styles.chip}
                 onPress={() => {
@@ -183,16 +204,28 @@ export default function SettingsScreen() {
                 <Text style={styles.chipText}>Emulator (10.0.2.2)</Text>
               </TouchableOpacity>
             ) : null}
-            <TouchableOpacity
-              style={styles.chip}
-              onPress={() => {
-                setOllamaHost('localhost');
-                setTimeout(runTest, 300);
-              }}
-            >
-              <Text style={styles.chipText}>localhost</Text>
-            </TouchableOpacity>
+            {shouldShowLocalhostChip() ? (
+              <TouchableOpacity
+                style={styles.chip}
+                onPress={() => {
+                  setOllamaHost('localhost');
+                  setTimeout(runTest, 300);
+                }}
+              >
+                <Text style={styles.chipText}>localhost</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
+
+          {Platform.OS === 'android' &&
+          isPhysicalPhone() &&
+          isEmulatorOnlyHost(ollamaHost) ? (
+            <Text style={styles.warning}>
+              {ollamaHost === '10.0.2.2'
+                ? "10.0.2.2 only works on an Android emulator. Enter your PC's Wi-Fi IP (e.g. 192.168.1.4)."
+                : "localhost points at your phone, not your PC. Enter your PC's Wi-Fi IP."}
+            </Text>
+          ) : null}
 
           <View style={styles.statusRow}>
             {testing ? (
@@ -270,7 +303,9 @@ export default function SettingsScreen() {
           <Text style={styles.hint}>
             {Platform.OS === 'web'
               ? 'Web: use localhost if Ollama runs on this PC.'
-              : `Phone on Wi‑Fi: host must be your PC's LAN IP (not localhost). ${getDefaultHostHint()}`}
+              : isPhysicalPhone()
+                ? "On a real phone, use your PC's Wi‑Fi IP (same network). Not localhost or 10.0.2.2."
+                : `Phone on Wi‑Fi: host must be your PC's LAN IP (not localhost). ${getDefaultHostHint()}`}
           </Text>
         </View>
 
@@ -326,11 +361,22 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.about}>
-          <LoreForgeLogo size={64} />
-          <Text style={styles.aboutTitle}>LoreForge</Text>
-          <Text style={styles.aboutVer}>v{Constants.expoConfig?.version ?? '1.0.1'}</Text>
+          <CreateInkLogo size={64} />
+          <Text style={styles.aboutTitle}>CreateInk</Text>
+          <Text style={styles.aboutVer}>v{Constants.expoConfig?.version ?? '1.2.0'}</Text>
         </View>
       </ScrollView>
+
+      <ConnectionTestModal
+        visible={testModal != null}
+        success={testModal?.success ?? false}
+        message={testModal?.message ?? ''}
+        endpoint={testModal?.endpoint}
+        model={ollamaModel}
+        onDismiss={() => setTestModal(null)}
+      />
+
+      <FindPcIpModal visible={showIpHelp} onDismiss={() => setShowIpHelp(false)} />
     </SafeAreaView>
   );
 }
@@ -394,6 +440,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 44,
     marginBottom: spacing.sm,
+  },
+  ipHelpLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
+    marginTop: -spacing.xs,
+  },
+  ipHelpText: {
+    fontFamily: fonts.body,
+    color: colors.goldMuted,
+    fontSize: 13,
+    textDecorationLine: 'underline',
   },
   chipRow: {
     flexDirection: 'row',
@@ -491,6 +550,13 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 12,
     lineHeight: 18,
+  },
+  warning: {
+    fontFamily: fonts.body,
+    color: colors.error,
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: spacing.sm,
   },
   row: {
     flexDirection: 'row',

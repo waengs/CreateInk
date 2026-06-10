@@ -1,11 +1,11 @@
 import { StyleSheet, View } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 import { useRouter } from 'expo-router';
-import LoreForgeLogo from './LoreForgeLogo';
+import CreateInkLogo from './CreateInkLogo';
 import { colors, fonts, spacing } from '../constants/theme';
 
 export default function LoreHeader({
-  title = 'LoreForge',
+  title = 'CreateInk',
   showLogo = true,
   showSettings = true,
   right,
@@ -15,7 +15,7 @@ export default function LoreHeader({
   return (
     <View style={styles.wrap}>
       <View style={styles.left}>
-        {showLogo ? <LoreForgeLogo size={36} /> : null}
+        {showLogo ? <CreateInkLogo size={36} /> : null}
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.right}>

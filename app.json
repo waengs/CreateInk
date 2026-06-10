@@ -1,23 +1,23 @@
 {
   "expo": {
-    "name": "LoreForge",
-    "slug": "loreforge",
-    "version": "1.0.1",
+    "name": "CreateInk",
+    "slug": "createink",
+    "version": "1.2.0",
     "orientation": "portrait",
-    "icon": "./assets/logo_revised.png",
+    "icon": "./assets/CreateInk_launcher.png",
     "userInterfaceStyle": "dark",
-    "scheme": "loreforge",
+    "scheme": "createink",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo_revised.png",
+        "foregroundImage": "./assets/CreateInk_launcher.png",
         "backgroundColor": "#121B22"
       }
     },
     "web": {
-      "favicon": "./assets/LoreForge_logo.png",
+      "favicon": "./assets/CreateInk_logo.png",
       "bundler": "metro"
     },
     "plugins": [

@@ -1,4 +1,4 @@
-# LoreForge
+# CreateInk
 
 Private fanfiction and worldbuilding studio for mobile. Build characters, relationships, plot seeds, and world rules, then write stories yourself or generate scenes with a **local [Ollama](https://ollama.com)** instance.
 
@@ -32,16 +32,16 @@ Copy `.env.example` to `.env` if you want default Ollama host/model values for d
    ollama pull llama3
    ```
 
-3. In LoreForge → **Settings** (gear on Home):
+3. In CreateInk → **Settings** (gear on Home):
    - Tap **Test connection**, you should see a green connected state.
    - Choose your model (e.g. `llama3`).
-   - **Physical phone**: use your PC’s Wi‑Fi IP (Settings can suggest one from Expo).
+   - **Physical phone**: use your PC's Wi‑Fi IP (Settings can suggest one from Expo).
    - **Android emulator**: use `10.0.2.2`.
    - **Same machine / iOS simulator**: use `localhost`.
 
 4. **Windows firewall**: allow inbound TCP **11434** on private networks if the phone cannot connect.
 
-5. Verify on PC: open `http://localhost:11434`, you should see “Ollama is running”.
+5. Verify on PC: open `http://localhost:11434`, you should see "Ollama is running".
 
 ## App screens
 
@@ -58,7 +58,7 @@ Copy `.env.example` to `.env` if you want default Ollama host/model values for d
 ### Story flows
 
 - **GENERATE +** → blank generator form → AI writes a new scene.
-- **Continue generating** (from a saved story) → pre-fills cast/plot/tags/rules/title; existing text shows under “Your story so far”.
+- **Continue generating** (from a saved story) → pre-fills cast/plot/tags/rules/title; existing text shows under "Your story so far".
 - **Add story → Write yourself** → manual editor with optional **Continue with AI**.
 
 Data stays on the device (AsyncStorage). No accounts or cloud sync.
@@ -66,12 +66,12 @@ Data stays on the device (AsyncStorage). No accounts or cloud sync.
 ## Project layout
 
 ```
-loreforge/
+createink/
 ├── app/                    # Expo Router screens
 │   ├── _layout.js          # Root layout (Paper, fonts, stack)
 │   ├── index.js            # Splash / hydration gate
 │   └── (tabs)/             # Home, Characters, World, Library, Generate, Settings
-├── assets/                 # App icon, favicon, LoreForge logo
+├── assets/                 # App icon, favicon, CreateInk logo
 ├── components/             # UI (home, library, world, characters, shared)
 ├── constants/              # theme, fonts, greetings, relationship types
 ├── services/               # Ollama client, relationship PDF export
@@ -88,8 +88,8 @@ loreforge/
 
 | File | Used for |
 |------|----------|
-| `LoreForge_logo.png` | In-app logo, splash screen, web favicon |
-| `logo_revised.png` | APK / home screen icon only |
+| `CreateInk_logo.png` | In-app logo, splash screen, web favicon |
+| `CreateInk_launcher.png` | APK / home screen icon (padded `CreateInk_logo`, won't crop) |
 
 ### Generated at runtime (do not commit)
 
@@ -121,8 +121,8 @@ Build a sideloadable APK:
 eas build -p android --profile preview
 ```
 
-When the build finishes, open the link in the terminal (or Expo dashboard) on your phone to download and install the APK. Point **Settings → Ollama URL** at your PC’s Wi‑Fi IP (`http://192.168.x.x:11434`).
+When the build finishes, open the link in the terminal (or Expo dashboard) on your phone to download and install the APK. Point **Settings → Ollama URL** at your PC's Wi‑Fi IP (`http://192.168.x.x:11434`).
 
 ## Design reference
 
-Original Figma design: [LoreForge Mobile App Design](https://www.figma.com/design/PLnhI6ZhKq7UKm8OIWwVuw/LoreForge-Mobile-App-Design)
+Original Figma design: [CreateInk Mobile App Design](https://www.figma.com/design/PLnhI6ZhKq7UKm8OIWwVuw/LoreForge-Mobile-App-Design)
