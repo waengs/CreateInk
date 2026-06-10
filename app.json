@@ -26,8 +26,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "bb212f33-fd59-46ab-8232-5f63fcfb9299"
+        "projectId": "2f07dd35-987c-4a56-8e1e-68adf28c995f"
       }
-    }
+    },
+    "owner": "waengs"
   }
 }
