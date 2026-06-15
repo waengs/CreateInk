@@ -4,11 +4,15 @@ Private fanfiction and worldbuilding studio for mobile. Build characters, relati
 
 ## Stack
 
-- **Expo SDK 56** + **React Native**
-- **Expo Router** (file-based navigation)
-- **Zustand** + **AsyncStorage** (offline-first, on-device storage)
-- **React Native Paper** + custom literary dark theme (Cinzel / Lora)
-- **Ollama** HTTP API for local AI generation
+| Category | Technology | Purpose |
+|---|---|---|
+| Framework | Expo SDK 56 + React Native | Cross-platform mobile application development |
+| Navigation | Expo Router | File-based routing and screen navigation |
+| State Management | Zustand | Lightweight global state management |
+| Local Storage | AsyncStorage | Offline-first on-device data persistence |
+| UI Framework | React Native Paper | Pre-built UI components and theming support |
+| Design System | Custom Literary Dark Theme (Cinzel / Lora) | Provides a consistent visual identity and immersive reading experience |
+| AI Integration | Ollama HTTP API | Local AI-powered story generation and assistance |
 
 ## Quick start
 
